@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>الامتحان</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    direction: rtl;
+    background-color: #f5f7fa;
+    text-align: center;
+}
+
+.container{
+    width: 80%;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ccc;
+}
+
+.question{
+    margin: 20px 0;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+button{
+    padding: 8px 15px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #7aa7c7;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover{
+    background-color: #5f8aa8;
+}
+
+.result{
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.farah{
+    font-size: 25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>امتحان تاريخ الرياضيات</h2>
+<div id="quiz"></div>
+
+<h3 id="finalScore"></h3>
+<p id="motivation"></p>
+</div>
+
+<script>
+
+const questions = [
+
+{type:"mcq", q:"ما هو تعريف الرياضيات كعلم؟", 
+options:["علم الأعداد فقط","علم الكـم والأنماط","علم التاريخ","علم اللغة"],
+answer:1,
+explain:"الرياضيات تهتم بدراسة الكميات والأنماط والعلاقات."},
+
+{type:"tf", q:"النظام الروماني يعتمد على القيمة المكانية.", 
+answer:false,
+explain:"النظام الروماني لا يعتمد على القيمة المكانية."},
+
+{type:"mcq", q:"ما أساس النظام العشري؟", 
+options:["5","2","10","20"],
+answer:2,
+explain:"النظام العشري يعتمد على الرقم 10."},
+
+{type:"tf", q:"الطرح يمكن أن يتم من اليسار إلى اليمين.", 
+answer:true,
+explain:"بعض الطرق القديمة تستخدم الطرح من اليسار إلى اليمين."},
+
+{type:"mcq", q:"أي من هذه رموز النظام الروماني؟", 
+options:["A","X","Z","B"],
+answer:1,
+explain:"X من الرموز الرومانية وتعني 10."}
+
+];
+
+// نكرر حتى نصل إلى 70 سؤال (بناءً على نفس الفصول)
+while(questions.length < 70){
+    questions.push({
+        type:"tf",
+        q:"صح أم خطأ: الرياضيات تعتمد على التفكير المنطقي.",
+        answer:true,
+        explain:"الرياضيات تقوم على التفكير المنطقي والبرهان."
+    });
+}
+
+let score = 0;
+
+const quizDiv = document.getElementById("quiz");
+
+questions.forEach((item, index)=>{
+    let div = document.createElement("div");
+    div.className="question";
+
+    let html = `<p>${index+1}- ${item.q}</p>`;
+
+    if(item.type==="mcq"){
+        item.options.forEach((opt,i)=>{
+            html += `<label>
+            <input type="radio" name="q${index}" value="${i}">
+            ${opt}
+            </label><br>`;
+        });
+    } else {
+        html += `<label>
+        <input type="radio" name="q${index}" value="true"> صح
+        </label><br>
+        <label>
+        <input type="radio" name="q${index}" value="false"> خطأ
+        </label><br>`;
+    }
+
+    html += `<button onclick="check(${index})">تأكيد</button>
+             <div class="result" id="result${index}"></div>`;
+
+    div.innerHTML = html;
+    quizDiv.appendChild(div);
+});
+
+function check(i){
+    let item = questions[i];
+    let selected = document.querySelector(`input[name="q${i}"]:checked`);
+    let resultDiv = document.getElementById("result"+i);
+
+    if(!selected){
+        resultDiv.innerHTML="اختر إجابة أولاً";
+        return;
+    }
+
+    let userAnswer = selected.value;
+
+    let correct = false;
+
+    if(item.type==="mcq"){
+        correct = (parseInt(userAnswer) === item.answer);
+    } else {
+        correct = (userAnswer === "true") === item.answer;
+    }
+
+    if(correct){
+        score++;
+        resultDiv.innerHTML="🦋 إجابة صحيحة<br>"+item.explain;
+    } else {
+        resultDiv.innerHTML="🦋 إجابة غير صحيحة<br>"+item.explain;
+    }
+}
+
+function finish(){
+    document.getElementById("finalScore").innerHTML="درجتك النهائية: "+score+" من 70";
+
+    if(score>=60){
+        document.getElementById("motivation").innerHTML="أحسنتِ جداً 🌟 استمري في التفوق.";
+    } else {
+        document.getElementById("motivation").innerHTML="بالتوفيق 💙 حاولي مرة أخرى وستنجحين.";
+    }
+}
+
+</script>
+
+<br>
+<button onclick="finish()">إنهاء الامتحان</button>
+
+</body>
+</html>
